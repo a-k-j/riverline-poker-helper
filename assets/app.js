@@ -741,45 +741,105 @@
 
   function renderDeck(currentCard) {
     const used = usedCardSet(currentCard);
-    const suitOrder = [0, 1, 2, 3];
+    // Reset to suit-selection step
+    state.pickerSuit = null;
+    renderSuitPicker(currentCard, used);
+  }
 
-    els.deck.innerHTML = suitOrder.map(function (suitIndex) {
-      const suit = P.SUITS[suitIndex];
-      const cards = [];
+  function renderSuitPicker(currentCard, used) {
+    const suitData = [
+      { index: 0, symbol: '♠', name: 'Spades',   color: 'rgba(243,238,225,0.85)' },
+      { index: 1, symbol: '♥', name: 'Hearts',   color: '#d25b52' },
+      { index: 2, symbol: '♦', name: 'Diamonds', color: '#d25b52' },
+      { index: 3, symbol: '♣', name: 'Clubs',    color: 'rgba(243,238,225,0.85)' }
+    ];
 
-      for (let rank = 12; rank >= 0; rank--) {
-        const card = P.makeCard(rank, suitIndex);
-        const isCurrent = card === currentCard;
-        const isUsed = used.has(card);
-        const isRed = suit.red;
-        const label = P.RANK_LABELS[rank];
-        const classes = ['deck-card'];
+    els.deck.innerHTML =
+      '<div class="picker-suit-step">' +
+        '<div class="picker-suit-grid">' +
+          suitData.map(function (s) {
+            // Check if suit has any available card
+            const hasAvail = [12,11,10,9,8,7,6,5,4,3,2,1,0].some(function (rank) {
+              const c = P.makeCard(rank, s.index);
+              return !used.has(c) || c === currentCard;
+            });
+            return (
+              '<button type="button" class="suit-pick-btn' + (!hasAvail ? ' is-exhausted' : '') + '"' +
+                ' data-suit="' + s.index + '"' +
+                ' style="--suit-color:' + s.color + '"' +
+                (hasAvail ? '' : ' disabled') +
+                ' aria-label="' + s.name + '">' +
+                '<span class="suit-pick-symbol" aria-hidden="true">' + s.symbol + '</span>' +
+                '<span class="suit-pick-label">' + s.name + '</span>' +
+              '</button>'
+            );
+          }).join('') +
+        '</div>' +
+      '</div>';
 
-        if (isRed) classes.push('is-red');
-        if (isCurrent) classes.push('is-current');
-        if (isUsed) classes.push('is-used');
+    els.deck.querySelector('.picker-suit-grid').addEventListener('click', function (e) {
+      const btn = e.target.closest('.suit-pick-btn');
+      if (!btn || btn.disabled) return;
+      const suitIndex = Number(btn.dataset.suit);
+      state.pickerSuit = suitIndex;
+      renderRankPicker(suitIndex, currentCard, used);
+    });
+  }
 
-        cards.push(
-          '<button type="button" class="' + classes.join(' ') + '"' +
-            ' data-card="' + card + '"' +
-            (isUsed ? ' disabled' : '') +
-            ' aria-label="' + label + ' of ' + suit.name + (isUsed ? ', already in use' : '') + '">' +
-            '<span class="deck-rank">' + label + '</span>' +
-            '<span class="deck-suit">' + suit.symbol + '</span>' +
-          '</button>'
-        );
-      }
+  function renderRankPicker(suitIndex, currentCard, used) {
+    const suitData = [
+      { symbol: '♠', name: 'Spades',   color: 'rgba(243,238,225,0.85)', textColor: '#172019', accentColor: 'rgba(100,95,82,0.9)' },
+      { symbol: '♥', name: 'Hearts',   color: '#d25b52', textColor: '#d25b52', accentColor: '#d25b52' },
+      { symbol: '♦', name: 'Diamonds', color: '#d25b52', textColor: '#d25b52', accentColor: '#d25b52' },
+      { symbol: '♣', name: 'Clubs',    color: 'rgba(243,238,225,0.85)', textColor: '#172019', accentColor: 'rgba(100,95,82,0.9)' }
+    ];
+    const suit = suitData[suitIndex];
+    const rankLabels = ['A','K','Q','J','10','9','8','7','6','5','4','3','2'];
+    // ranks in descending order: 12 (Ace) down to 0
+    const ranks = [12,11,10,9,8,7,6,5,4,3,2,1,0];
 
-      return (
-        '<div class="deck-suit">' +
-          '<div class="deck-suit-head">' +
-            '<span class="suit-symbol ' + (suit.red ? 'is-red' : 'is-black') + '">' + suit.symbol + '</span>' +
-            suit.name +
-          '</div>' +
-          '<div class="deck-grid">' + cards.join('') + '</div>' +
-        '</div>'
-      );
-    }).join('');
+    els.deck.innerHTML =
+      '<div class="picker-rank-step">' +
+        '<div class="picker-back-row">' +
+          '<button type="button" class="picker-back-btn" aria-label="Back to suit selection">' +
+            '<svg viewBox="0 0 20 20" fill="none" aria-hidden="true">' +
+              '<path d="M12 15 7 10l5-5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>' +
+            '</svg>' +
+            'Suits' +
+          '</button>' +
+          '<span class="picker-selected-suit" style="--suit-color:' + suit.color + '">' +
+            '<span aria-hidden="true">' + suit.symbol + '</span>' +
+            '<span class="picker-selected-suit-name">' + suit.name + '</span>' +
+          '</span>' +
+        '</div>' +
+        '<div class="rank-grid">' +
+          ranks.map(function (rank, i) {
+            const card = P.makeCard(rank, suitIndex);
+            const isCurrent = card === currentCard;
+            const isUsed = used.has(card) && !isCurrent;
+            return (
+              '<button type="button" class="rank-pick-btn' + (isCurrent ? ' is-current' : '') + '"' +
+                ' data-card="' + card + '"' +
+                ' style="color:' + suit.textColor + ';--rank-color:' + suit.accentColor + '"' +
+                (isUsed ? ' disabled' : '') +
+                ' aria-label="' + rankLabels[i] + ' of ' + suit.name + (isUsed ? ', already in use' : '') + '">' +
+                rankLabels[i] +
+              '</button>'
+            );
+          }).join('') +
+        '</div>' +
+      '</div>';
+
+    els.deck.querySelector('.picker-back-btn').addEventListener('click', function () {
+      state.pickerSuit = null;
+      renderSuitPicker(currentCard, used);
+    });
+
+    els.deck.querySelector('.rank-grid').addEventListener('click', function (e) {
+      const btn = e.target.closest('.rank-pick-btn');
+      if (!btn || btn.disabled) return;
+      chooseCard(Number(btn.dataset.card));
+    });
   }
 
   function chooseCard(card) {
@@ -931,9 +991,8 @@
     els.removeCard.addEventListener('click', removeActiveCard);
 
     els.deck.addEventListener('click', function (event) {
-      const button = event.target.closest('.deck-card');
-      if (!button || button.disabled) return;
-      chooseCard(Number(button.dataset.card));
+      // two-step picker: clicks handled by inline listeners in renderSuitPicker / renderRankPicker
+      // kept for any legacy fallback
     });
 
     CARD_DIALOG.addEventListener('click', function (event) {
