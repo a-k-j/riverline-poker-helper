@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Riverline spade mark">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="18%" r="90%">
+      <stop offset="0%" stop-color="#164b34"/>
+      <stop offset="55%" stop-color="#0b2619"/>
+      <stop offset="100%" stop-color="#06110c"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#e7c87f" stop-opacity=".2"/>
+      <stop offset="100%" stop-color="#e7c87f" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="160" y1="110" x2="360" y2="410" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f8e8ba"/>
+      <stop offset="45%" stop-color="#e7c87f"/>
+      <stop offset="100%" stop-color="#b58e47"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <circle cx="256" cy="256" r="196" fill="url(#glow)"/>
+  <g transform="translate(76.8 76.8) scale(.7)">
+    <path d="M256 74C256 74 116 182 116 284c0 70 56 112 116 112 16 0 31-4 44-12-8 40-26 66-54 86h68c-28-20-46-46-54-86 13 8 28 12 44 12 60 0 116-42 116-112C396 182 256 74 256 74Z" fill="url(#gold)"/>
+  </g>
+</svg>

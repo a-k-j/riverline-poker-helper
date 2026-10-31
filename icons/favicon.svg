@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Riverline">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="15%" r="95%">
+      <stop offset="0%" stop-color="#164b34"/>
+      <stop offset="55%" stop-color="#0b2619"/>
+      <stop offset="100%" stop-color="#06110c"/>
+    </radialGradient>
+    <linearGradient id="gold" x1="16" y1="9" x2="48" y2="56" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f8e8ba"/>
+      <stop offset="48%" stop-color="#e7c87f"/>
+      <stop offset="100%" stop-color="#b58e47"/>
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="14" fill="url(#bg)"/>
+  <rect x="2" y="2" width="60" height="60" rx="12" fill="none" stroke="#e7c87f" stroke-opacity=".35" stroke-width=".7"/>
+  <g transform="translate(8.5 7) scale(.092)">
+    <path d="M256 74C256 74 116 182 116 284c0 70 56 112 116 112 16 0 31-4 44-12-8 40-26 66-54 86h68c-28-20-46-46-54-86 13 8 28 12 44 12 60 0 116-42 116-112C396 182 256 74 256 74Z" fill="url(#gold)"/>
+  </g>
+</svg>
